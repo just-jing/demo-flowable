@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL"
+             xmlns:flowable="http://flowable.org/bpmn"
+             typeLanguage="http://www.w3.org/2001/XMLSchema"
+             expressionLanguage="http://www.w3.org/1999/XPath"
+             targetNamespace="http://www.flowable.org/processdef"
+             exporter="Flowable Open Source Modeler"
+             exporterVersion="6.8.0">
+    <process id="flowable_test" name="flowable_test" isExecutable="true">
+        <startEvent id="startEvent"/>
+        <userTask id="p001" name="p001" flowable:assignee="${p001_assignee}">
+            <multiInstanceLoopCharacteristics flowable:collection="${p001_assignees} " flowable:elementVariable="p001_assignee">
+                <completionCondition>${nrOfInstances == nrOfCompletedInstances}</completionCondition>
+            </multiInstanceLoopCharacteristics>
+        </userTask>
+        <userTask id="p002" name="p002" flowable:assignee="${p002_assignee}"/>
+        <sequenceFlow id="l001" sourceRef="startEvent" targetRef="p001"/>
+        <sequenceFlow id="l002" sourceRef="p001" targetRef="p002"/>
+        <sequenceFlow id="l003" sourceRef="p002" targetRef="endEvent"/>
+        <endEvent id="endEvent"/>
+    </process>
+</definitions>

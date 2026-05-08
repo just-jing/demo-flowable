@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.demoflowable.exporttask.mapper.ExportTaskMapper">
+
+    <insert id="insert" parameterType="ExportTask">
+        INSERT INTO export_task (id, task_name, creator, creator_id, status, handler_type,
+                                 export_params, export_file, file_size, error_message,
+                                 created_time, start_time, completed_time)
+        VALUES (#{id}, #{taskName}, #{creator}, #{creatorId}, #{status}, #{handlerType},
+                #{exportParams}, #{exportFile}, #{fileSize}, #{errorMessage},
+                #{createdTime}, #{startTime}, #{completedTime})
+    </insert>
+
+    <update id="updateById" parameterType="ExportTask">
+        UPDATE export_task
+        SET status         = #{status},
+            export_file    = #{exportFile},
+            file_size      = #{fileSize},
+            error_message  = #{errorMessage},
+            start_time     = #{startTime},
+            completed_time = #{completedTime},
+            version        = version + 1
+        WHERE id = #{id}
+          AND version = #{version}
+    </update>
+
+    <select id="selectById" resultType="ExportTask">
+        SELECT *
+        FROM export_task
+        WHERE id = #{id}
+    </select>
+
+    <select id="selectByIdForUpdate" resultType="ExportTask">
+        SELECT *
+        FROM export_task
+        WHERE id = #{id}
+        FOR UPDATE
+    </select>
+
+    <select id="selectPage" resultType="ExportTask">
+        SELECT *
+        FROM export_task
+        <where>
+            <if test="status != null and status != ''">
+                AND status = #{status}
+            </if>
+        </where>
+        ORDER BY created_time DESC
+        LIMIT #{size} OFFSET #{offset}
+    </select>
+
+    <select id="count" resultType="long">
+        SELECT COUNT(*)
+        FROM export_task
+        <where>
+            <if test="status != null and status != ''">
+                AND status = #{status}
+            </if>
+        </where>
+    </select>
+
+    <select id="selectPendingTopN" resultType="ExportTask">
+        SELECT *
+        FROM export_task
+        WHERE status = 'PENDING'
+        ORDER BY created_time ASC
+        LIMIT #{limit}
+    </select>
+
+    <update id="timeoutRunningTasks">
+        UPDATE export_task
+        SET status         = 'FAILED',
+            error_message  = #{errorMessage},
+            completed_time = #{completedTime},
+            version        = version + 1
+        WHERE status = 'RUNNING'
+          AND start_time IS NOT NULL
+          AND start_time &lt; #{cutoff}
+    </update>
+
+</mapper>

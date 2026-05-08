@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration scan="true" scanPeriod="1 seconds">
+    <!--日志输出到控制台-->
+    <appender name="console" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>[%green(%d{HH:mm:ss.SSS})] [%highlight(%-5level)] [%cyan(%thread)] [%boldGreen(%file{36}:%line)] - %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <!-- 根日志输出级别-->
+    <root level="debug">
+        <appender-ref ref="console"/>
+    </root>
+
+</configuration>
